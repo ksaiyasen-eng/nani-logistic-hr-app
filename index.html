@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#14161B">
+<script>try{if(localStorage.getItem("hr_theme")==="light"){document.documentElement.dataset.theme="light";document.querySelector('meta[name=theme-color]').content="#F5F3EF"}}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600&display=swap">
 <style>
@@ -87,7 +88,7 @@ tr:last-child td{border-bottom:0}
 .top select,.top input{width:auto;min-height:40px;background:var(--card);color:var(--ink);box-shadow:var(--sh);border-color:transparent}
 .top .hi{font-size:clamp(18px,4.8vw,22px);font-weight:700;line-height:1.6}
 .ebar{background:#14161B;color:#fff;margin-bottom:14px}.ebar .wrap{padding-top:10px;padding-bottom:10px}
-.ebar #menub{background:transparent;color:#fff;border-color:#3A4050}.ebar #menub:hover{background:#262B33}
+.ebar #menub,.ebar [data-theme-tg]{background:transparent;color:#fff;border-color:#3A4050}.ebar #menub:hover,.ebar [data-theme-tg]:hover{background:#262B33}
 @media (max-width:600px){.top .net{font-size:0;gap:0}}
 .chip{min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mut);font-size:13px;font-weight:500;box-shadow:none}
 .chip:hover{color:var(--ink);background:var(--line2)}
@@ -175,18 +176,19 @@ details.fold>summary::-webkit-details-marker{display:none}details.fold>summary::
 @media (pointer:coarse){button.sm{min-height:44px;padding:0 14px}.dsel{display:flex;gap:6px;min-width:0}.dsel select{width:auto;flex:1 1 0;min-width:64px;padding:8px}.dsel.bad select{border-color:var(--acc)}
 .fsel{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 input.cell{min-height:44px}}
-/* design A: charcoal + orange from the logo is the only screen theme (owner 2026-11-24); the light values above are used for printing */
+/* design A: charcoal + orange from the logo is the default screen theme (owner 2026-11-24); the light values above are used for printing and for the light mode a person can pick (html[data-theme=light], saved in localStorage hr_theme) */
+:root[data-theme=light]{color-scheme:light}
 @media screen{
-:root{color-scheme:dark;--pri-t:#FF8B4A;--soft:#20242B;--ink:#ECEEF1;--mut:#9AA1AC;--line:#2E333C;--line2:#252A32;--bg:#0E0F12;--card:#1A1D23;--pri:#EC5A24;--pri-h:#FF7A3D;--pri2:#3A2114;--acc:#D32F45;--acc2:#3A1A20;--warn:#F5D547;--warn2:#3A3210;--ok:#6FCF82;--ok2:#173321;--hero:#EC5A24;--sh:0 1px 2px rgba(0,0,0,.3)}
-a,a:hover,.tabs button[aria-current=page],.p-pri{color:#FF8B4A}
-button,input,select,textarea,.emp,.tw,.dlg{background:var(--card)}
-button:hover{background:#262B33}
-button.pri{background:var(--pri)}button.dng{background:var(--acc)}
-.kpis>.kpi:first-child,.kpis>.kpi:first-child .mut{color:var(--on-pri)}
-th,th.emp{background:#20242B}
-.p-bad,.err-box{color:#F0A58C}.warn-box{color:#F0CF86}
-.top select,.top input{background:var(--card);color:var(--ink)}
-.dlgbg{background:rgba(0,0,0,.6)}
+:root:not([data-theme=light]){color-scheme:dark;--pri-t:#FF8B4A;--soft:#20242B;--ink:#ECEEF1;--mut:#9AA1AC;--line:#2E333C;--line2:#252A32;--bg:#0E0F12;--card:#1A1D23;--pri:#EC5A24;--pri-h:#FF7A3D;--pri2:#3A2114;--acc:#D32F45;--acc2:#3A1A20;--warn:#F5D547;--warn2:#3A3210;--ok:#6FCF82;--ok2:#173321;--hero:#EC5A24;--sh:0 1px 2px rgba(0,0,0,.3)}
+:where(html:not([data-theme=light])) a,:where(html:not([data-theme=light])) a:hover,:where(html:not([data-theme=light])) .tabs button[aria-current=page],:where(html:not([data-theme=light])) .p-pri{color:#FF8B4A}
+:where(html:not([data-theme=light])) button,:where(html:not([data-theme=light])) input,:where(html:not([data-theme=light])) select,:where(html:not([data-theme=light])) textarea,:where(html:not([data-theme=light])) .emp,:where(html:not([data-theme=light])) .tw,:where(html:not([data-theme=light])) .dlg{background:var(--card)}
+:where(html:not([data-theme=light])) button:hover{background:#262B33}
+:where(html:not([data-theme=light])) button.pri{background:var(--pri)}:where(html:not([data-theme=light])) button.dng{background:var(--acc)}
+:where(html:not([data-theme=light])) .kpis>.kpi:first-child,:where(html:not([data-theme=light])) .kpis>.kpi:first-child .mut{color:var(--on-pri)}
+:where(html:not([data-theme=light])) th,:where(html:not([data-theme=light])) th.emp{background:#20242B}
+:where(html:not([data-theme=light])) .p-bad,:where(html:not([data-theme=light])) .err-box{color:#F0A58C}:where(html:not([data-theme=light])) .warn-box{color:#F0CF86}
+:where(html:not([data-theme=light])) .top select,:where(html:not([data-theme=light])) .top input{background:var(--card);color:var(--ink)}
+:where(html:not([data-theme=light])) .dlgbg{background:rgba(0,0,0,.6)}
 }
 @media print{body,.doc{background:#fff;color:#000}}
 @media (max-width:600px){.slipv .doc>div[style*="grid-template-columns"]{grid-template-columns:1fr!important}.slipv{padding:10px!important}}
@@ -235,6 +237,14 @@ document.body ? startLao() : document.addEventListener("DOMContentLoaded", start
 const fmtD = (n) => { const x = Number(n) || 0; return Number.isInteger(x) ? String(x) : x.toFixed(1); };
 const store = (s) => ({ get(k) { try { return s().getItem(k); } catch { return null; } }, set(k, v) { try { v == null ? s().removeItem(k) : s().setItem(k, v); } catch {} } });
 const SS = store(() => sessionStorage), LS = store(() => localStorage);
+const isLight = () => document.documentElement.dataset.theme === "light";
+const themeBtn = (txt) => `<button type="button" class="sm" data-theme-tg${txt ? ' data-txt="1"' : ""} aria-label="${isLight() ? "ປ່ຽນເປັນໂໝດມືດ" : "ປ່ຽນເປັນໂໝດສະຫວ່າງ"}" title="${isLight() ? "ໂໝດມືດ" : "ໂໝດສະຫວ່າງ"}" style="min-width:44px">${isLight() ? "🌙" : "☀"}${txt ? ` ${isLight() ? "ໂໝດມືດ" : "ໂໝດສະຫວ່າງ"}` : ""}</button>`;
+function setTheme(light) {
+  const h = document.documentElement; light ? h.dataset.theme = "light" : delete h.dataset.theme; LS.set("hr_theme", light ? "light" : null);
+  $('meta[name="theme-color"]').content = light ? "#F5F3EF" : "#14161B";
+  $$("[data-theme-tg]").forEach((b) => { const f = b === document.activeElement, n = document.createRange().createContextualFragment(themeBtn(!!b.dataset.txt)).firstChild; b.replaceWith(n); if (f) n.focus(); });
+}
+document.addEventListener("click", (e) => { if (e.target.closest("[data-theme-tg]")) setTheme(!isLight()); });
 const vtNow = () => new Date(Date.now() + 7 * 3600e3);
 const curMonth = () => vtNow().toISOString().slice(0, 7);
 const curDate = () => vtNow().toISOString().slice(0, 10);
@@ -435,7 +445,7 @@ async function renderLogin(msg) {
         <label>ລະຫັດຜ່ານ<input id="lpw" type="password" required autocomplete="current-password"></label>
         <button class="pri" type="submit">ເຂົ້າລະບົບ</button>`}
       </form>
-      <div class="mut xs">${VER}</div>
+      <div class="row" style="justify-content:space-between"><span class="mut xs">${VER}</span>${themeBtn(true)}</div>
     </div></div>`;
   $("#mEmp").onclick = () => setLoginMode("emp");
   $("#mHr").onclick = () => setLoginMode("hr");
@@ -492,7 +502,7 @@ function renderEmp() {
   const m = S.me, e = m.emp, annual = m.balances.find((b) => b.k === "annual" && b.active);
   $("#app").innerHTML = `
   <div class="top ebar"><div class="wrap" style="max-width:720px;align-items:center;flex-wrap:nowrap"><img src="img/mark-160.png" alt="" width="40" height="40" style="flex:none;margin:-4px -6px -4px -8px"><span class="net" id="net"><i></i> ເຊື່ອມຕໍ່ແລ້ວ</span><h1 class="hi" style="flex:1;min-width:0;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.name)}<span id="hveh"></span></h1>
-    <button class="sm" id="menub" data-ui="secondary" aria-label="ເມນູ" style="min-width:44px;min-height:44px;font-size:20px">☰</button></div></div>
+    ${themeBtn()}<button class="sm" id="menub" data-ui="secondary" aria-label="ເມນູ" style="min-width:44px;min-height:44px;font-size:20px">☰</button></div></div>
   <div class="wrap grid" style="max-width:720px;gap:14px">
     <section class="card grid" style="gap:12px" id="pcard"></section>
     ${m.isApprover ? `<section class="card grid" style="gap:10px"><div class="row" style="justify-content:space-between"><h2>✅ ລໍຖ້າອະນຸມັດ (ລາ / ເບີກເງິນ)</h2><span class="pill p-warn" id="apn" ${m.pendingApprovals ? "" : "hidden"}>${m.pendingApprovals}</span></div><div id="apl"><div class="mut sm">ກຳລັງໂຫຼດ…</div></div></section>` : ""}
@@ -1003,6 +1013,8 @@ const EM_IC = {
   "🔑": ['<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3"/>'], "🗺": ['<path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'],
   "🎯": ['<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'],
   "🏆": ['<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H4a4 4 0 0 0 4 4M16 6h4a4 4 0 0 1-4 4M12 13v4M8 20h8"/>'],
+  "☀": ['<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],
+  "🌙": ['<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'],
   "📦": ['<path d="m3 8 9-5 9 5v8l-9 5-9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>'],
 };
 const EM_RE = new RegExp("(" + Object.keys(EM_IC).sort((a, b) => b.length - a.length).join("|") + ")\\uFE0F?", "u");
@@ -1038,7 +1050,7 @@ function renderShell() {
     <nav class="tabs" id="snav" aria-label="ເມນູ">${nav}</nav></aside>
     <div style="min-width:0"><header class="top"><div class="wrap"><div style="flex:1;min-width:180px"><h1 class="hi">ສະບາຍດີ, ${isAdmin() ? "ແອດມິນ" : "HR"}</h1><div class="sm mut">ຍິນດີຕ້ອນຮັບສູ່ລະບົບບໍລິຫານພະນັກງານ</div></div>
     <select id="mo_m" style="width:auto" aria-label="ເດືອນ">${MONTHS.map((n, i) => `<option value="${String(i + 1).padStart(2, "0")}" ${+S.month.slice(5) === i + 1 ? "selected" : ""}>${n}</option>`).join("")}</select><select id="mo_y" style="width:auto" aria-label="ປີ">${[-3, -2, -1, 0, 1].map((d) => +curMonth().slice(0, 4) + d).concat(+S.month.slice(0, 4)).filter((y, i, a) => a.indexOf(y) === i).sort().map((y) => `<option ${y === +S.month.slice(0, 4) ? "selected" : ""}>${y}</option>`).join("")}</select><select id="dp" aria-label="ພະແນກ"><option value="">ທຸກພະແນກ</option>${depts.map((d) => `<option ${d === S.dept ? "selected" : ""}>${esc(d)}</option>`).join("")}</select>
-    <span class="net" id="net"><i></i> ເຊື່ອມຕໍ່ແລ້ວ</span>${isAdmin() ? `<button class="sm" id="pushb" aria-label="ແຈ້ງເຕືອນ">🔔</button>` : ""}<button class="sm" id="lo">ອອກ</button></div></header>
+    <span class="net" id="net"><i></i> ເຊື່ອມຕໍ່ແລ້ວ</span>${isAdmin() ? `<button class="sm" id="pushb" aria-label="ແຈ້ງເຕືອນ">🔔</button>` : ""}${themeBtn()}<button class="sm" id="lo">ອອກ</button></div></header>
     <main class="wrap" id="main"></main></div></div>`;
   // plain selects: Safari's <input type="month"> shows a day segment and leaves the value empty
   $("#mo_m").onchange = $("#mo_y").onchange = () => { S.month = $("#mo_y").value + "-" + $("#mo_m").value; SS.set("hr_month", S.month); renderTab(); };
