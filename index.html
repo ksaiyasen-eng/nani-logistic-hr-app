@@ -296,7 +296,7 @@ const pill = (map, k) => { const x = map[k] || [k, ""]; return `<span class="pil
 const ERR = {
   bad_photo: "ຮູບບໍ່ຖືກຕ້ອງ ຫຼື ໃຫຍ່ເກີນ — ເລືອກຮູບ JPG/PNG ໃໝ່",
   unauthorized: "ໝົດເວລາເຂົ້າລະບົບ ຫຼື ບໍ່ມີສິດ — ກະລຸນາເຂົ້າລະບົບໃໝ່", forbidden: "ທ່ານບໍ່ມີສິດເຮັດລາຍການນີ້",
-  bad_login: "ລະຫັດພະນັກງານ ຫຼື PIN ບໍ່ຖືກຕ້ອງ", bad_pin: "PIN ບໍ່ຖືກຕ້ອງ", locked: "ໃສ່ຜິດຫຼາຍເທື່ອ — ຖືກລັອກ 15 ນາທີ",
+  bad_login: "ລະຫັດພະນັກງານ ຫຼື PIN ບໍ່ຖືກຕ້ອງ", bad_pin: "PIN ບໍ່ຖືກຕ້ອງ", pin_format: "PIN ໃໝ່ຕ້ອງເປັນຕົວເລກ 6 ຫຼັກ", pin_same: "PIN ໃໝ່ຕ້ອງບໍ່ຄືກັບ PIN ເກົ່າ", pin_weak: "PIN ນີ້ເດົາງ່າຍເກີນໄປ (ເຊັ່ນ 000000, 123456, 121212) — ກະລຸນາເລືອກໃໝ່", locked: "ໃສ່ຜິດຫຼາຍເທື່ອ — ຖືກລັອກ 15 ນາທີ",
   not_setup: "ລະບົບຍັງບໍ່ໄດ້ຕັ້ງລະຫັດແອດມິນ", already_setup: "ລະບົບຕັ້ງຄ່າແລ້ວ", bad_setup_code: "ລະຫັດຕັ້ງຄ່າບໍ່ຖືກຕ້ອງ",
   password_too_short: "ລະຫັດຜ່ານຕ້ອງຍາວຢ່າງໜ້ອຍ 10 ຕົວອັກສອນ", bad_current_password: "ລະຫັດຜ່ານປັດຈຸບັນບໍ່ຖືກ",
   out_of_area: "ທ່ານຢູ່ນອກເຂດບ່ອນເຮັດວຽກ — ເຂົ້າໃກ້ບ່ອນເຮັດວຽກແລ້ວລອງໃໝ່", location_required: "ຕ້ອງເປີດ GPS ແລະ ອະນຸຍາດຕຳແໜ່ງ ຈຶ່ງສະແກນໄດ້",
@@ -550,11 +550,24 @@ function myAttDialog(m) {
 }
 // rarely used actions live behind one menu so the header stays calm on a phone
 function empMenu() {
-  const items = [["pushDialog", "🔔", "ແຈ້ງເຕືອນເທິງມືຖື"], ["tgLinkDialog", "💬", "ເຊື່ອມ Telegram"], ["profileForm", "👤", "ຂໍ້ມູນສ່ວນຕົວ ແລະ ຮູບ"], ["manualDialog", "📖", "ຄູ່ມື"], ["logout", "🚪", "ອອກຈາກລະບົບ"]];
+  const items = [["pushDialog", "🔔", "ແຈ້ງເຕືອນເທິງມືຖື"], ["tgLinkDialog", "💬", "ເຊື່ອມ Telegram"], ["profileForm", "👤", "ຂໍ້ມູນສ່ວນຕົວ ແລະ ຮູບ"], ["changePinDialog", "🔑", "ປ່ຽນ PIN"], ["manualDialog", "📖", "ຄູ່ມື"], ["logout", "🚪", "ອອກຈາກລະບົບ"]];
   dialog({ title: "ເມນູ", ok: "", cancel: "ປິດ", body: `<div class="grid" style="gap:8px">${items.map(([k, i, t]) => `<button data-mi="${k}" style="justify-content:flex-start;min-height:48px;font-size:16px;text-align:left"><span aria-hidden="true">${i}</span> ${t}</button>`).join("")}</div>`,
     onOpen: (r, close) => $$("[data-mi]", r).forEach((b) => b.onclick = () => { close(); const k = b.dataset.mi;
       if (k === "logout") dialog({ title: "ອອກຈາກລະບົບ?", body: `<p class="mut">ຄັ້ງຕໍ່ໄປຕ້ອງໃສ່ລະຫັດ ແລະ PIN ໃໝ່</p>`, ok: "ອອກຈາກລະບົບ", onOk: () => logout() });
-      else ({ pushDialog, tgLinkDialog, profileForm, manualDialog })[k](); }) });
+      else ({ pushDialog, tgLinkDialog, profileForm, changePinDialog, manualDialog })[k](); }) });
+}
+function changePinDialog() {
+  const f = (id, lab, ac) => `<label>${lab}<input id="${id}" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="${ac}" required></label>`;
+  dialog({ title: "🔑 ປ່ຽນ PIN", ok: "ບັນທຶກ PIN ໃໝ່", body: `<div class="grid" style="gap:12px">${f("cp0", "PIN ປັດຈຸບັນ", "current-password")}${f("cp1", "PIN ໃໝ່ 6 ຫຼັກ", "new-password")}${f("cp2", "ໃສ່ PIN ໃໝ່ອີກຄັ້ງ", "new-password")}
+    <p class="xs mut" style="margin:0">ເຄື່ອງອື່ນທີ່ເຂົ້າລະບົບໄວ້ຈະຖືກອອກຈາກລະບົບ ແລະ Telegram ຕ້ອງເຊື່ອມໃໝ່. ຢ່າບອກ PIN ໃຫ້ຜູ້ອື່ນ. ຖ້າລືມ PIN ໃຫ້ແຈ້ງ HR.</p></div>`,
+    onOk: async (r) => {
+      const cur = val(r, "cp0"), pin = val(r, "cp1");
+      if (!/^\d{6}$/.test(pin)) throw new Error(ERR.pin_format);
+      if (pin !== val(r, "cp2")) throw new Error("PIN ໃໝ່ສອງຊ່ອງບໍ່ກົງກັນ");
+      const j = await api("changePin", { current: cur, pin });
+      LS.set("hr_emp_tok", j.token); S.token = j.token; S.payToken = null; pushResync();
+      toast("ປ່ຽນ PIN ແລ້ວ");
+    } });
 }
 function leaveListHTML(rows) {
   if (!rows || !rows.length) return `<div class="mut sm">ຍັງບໍ່ມີໃບລາ</div>`;
