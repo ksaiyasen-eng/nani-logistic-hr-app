@@ -410,6 +410,7 @@ function logout(msg) {
   if (!msg) pushSub().then((s) => s && api("pushUnsubscribe", { endpoint: s.endpoint }).then(() => s.unsubscribe())).catch(() => {});
   if (S.role === "emp") LS.set("hr_emp_tok", null); else SS.set("hr_tok", null);
   S.role = S.token = S.payToken = S.me = null; S.cache = {}; T.cfg = null; T.entries = [];
+  H.st = null; H.at = 0; LS.set("hub_cache2", null); // the next person on this phone loads only what their own login allows
   SS.set("hub_tok", null); H.bills = null; H.docs = {};
   dlgClose();
   renderLogin(msg);
@@ -1489,15 +1490,18 @@ const hSetTok = (k, v) => { const t = hToks(); if (v) t[k] = v; else delete t[k]
 const hAdmin = () => hTok("_admin");
 const dTok = (id) => hAdmin() || hTok(id);
 const AUTHE = ["bad_pin", "no_pin", "unauthorized"];
+LS.set("hub_cache", null); // old full copy of every department's links, kept on phones before 2026-11-26
 async function hubLoad(force) {
   if (H.st && !force && Date.now() - H.at < 20000) return H;
   try {
-    const r = await fetch(HUB + "?t=" + Date.now(), { cache: "no-store" }); if (!r.ok) throw 0; const j = await r.json();
+    // read through hr-report with the app login: links are no longer readable without one, and employees only get what they may see
+    const j = await post(API.replace("/hr-api", "/hr-report"), "application/json", JSON.stringify({ action: "hubState", token: S.token }), true);
+    if (!j.ok) throw 0;
     if (j.data) { H.st = j.data; H.ver = j.version; } H.pins = new Set(j.pins || []); if (j.paymentsDept) H.payDept = j.paymentsDept; H.at = Date.now(); H.stale = false;
-    LS.set("hub_cache", JSON.stringify({ st: H.st, ver: H.ver }));
+    LS.set("hub_cache2", JSON.stringify({ st: H.st, ver: H.ver }));
   } catch {
     H.stale = true;
-    if (!H.st) { try { const c = JSON.parse(LS.get("hub_cache") || "null"); if (c) { H.st = c.st; H.ver = c.ver; } } catch {} }
+    if (!H.st) { try { const c = JSON.parse(LS.get("hub_cache2") || "null"); if (c) { H.st = c.st; H.ver = c.ver; } } catch {} }
     if (!H.st) throw new Error(ERR.network);
   }
   ["departments", "jds", "workflow"].forEach((k) => (H.st[k] = H.st[k] || [])); H.st.settings = H.st.settings || {};
@@ -1527,7 +1531,8 @@ function goTab(k) {
 function doneToday() { let d = null; try { d = JSON.parse(LS.get("hub_done") || "null"); } catch {} if (!d || d.date !== curDate() || typeof d.ids !== "object") d = { date: curDate(), ids: {} }; return d; }
 function toggleDone(id) { const d = doneToday(); if (d.ids[id]) delete d.ids[id]; else d.ids[id] = 1; LS.set("hub_done", JSON.stringify(d)); }
 async function hubSave() {
-  try { const j = await hpost(HUB, { action: "save", token: hAdmin(), baseVersion: H.ver, data: H.st }); H.ver = j.version; H.at = Date.now(); LS.set("hub_cache", JSON.stringify({ st: H.st, ver: H.ver })); }
+  if (H.stale) throw new Error("ເຊື່ອມ Staff Hub ບໍ່ໄດ້ — ໂຫຼດໜ້າໃໝ່ແລ້ວລອງອີກຄັ້ງ"); // never save over the server from an old or trimmed copy
+  try { const j = await hpost(HUB, { action: "save", token: hAdmin(), baseVersion: H.ver, data: H.st }); H.ver = j.version; H.at = Date.now(); LS.set("hub_cache2", JSON.stringify({ st: H.st, ver: H.ver })); }
   catch (e) {
     H.at = 0;
     if (e.code === "conflict") { await hubLoad(true); throw new Error("ມີການແກ້ໄຂຈາກອຸປະກອນອື່ນກ່ອນ — ໂຫຼດຂໍ້ມູນລ່າສຸດແລ້ວ ກະລຸນາລອງໃໝ່"); }
