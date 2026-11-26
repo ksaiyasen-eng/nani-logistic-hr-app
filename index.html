@@ -1493,13 +1493,17 @@ const AUTHE = ["bad_pin", "no_pin", "unauthorized"];
 LS.set("hub_cache", null); // old full copy of every department's links, kept on phones before 2026-11-26
 async function hubLoad(force) {
   if (H.st && !force && Date.now() - H.at < 20000) return H;
+  const tok = S.token;
   try {
     // read through hr-report with the app login: links are no longer readable without one, and employees only get what they may see
-    const j = await post(API.replace("/hr-api", "/hr-report"), "application/json", JSON.stringify({ action: "hubState", token: S.token }), true);
+    const j = await post(API.replace("/hr-api", "/hr-report"), "application/json", JSON.stringify({ action: "hubState", token: tok }), true);
+    // someone logged out or another person logged in while this was loading: drop the reply, it was for the old login
+    if (S.token !== tok) throw Object.assign(new Error(ERR.network), { gone: true });
     if (!j.ok) throw 0;
     if (j.data) { H.st = j.data; H.ver = j.version; } H.pins = new Set(j.pins || []); if (j.paymentsDept) H.payDept = j.paymentsDept; H.at = Date.now(); H.stale = false;
     LS.set("hub_cache2", JSON.stringify({ st: H.st, ver: H.ver }));
-  } catch {
+  } catch (e) {
+    if (e?.gone || S.token !== tok) throw e?.gone ? e : Object.assign(new Error(ERR.network), { gone: true }); // a failed old-login request must not mark the new login's data as stale
     H.stale = true;
     if (!H.st) { try { const c = JSON.parse(LS.get("hub_cache2") || "null"); if (c) { H.st = c.st; H.ver = c.ver; } } catch {} }
     if (!H.st) throw new Error(ERR.network);
